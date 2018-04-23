@@ -1,0 +1,15 @@
+<settings>
+	<category label="CommonCore">
+		<setting label="CommonCore" type="text" enable="false"/>
+		<setting label="Provides shared modules by EdDillinger" type="text" enable="false"/>
+		<setting type="sep"/>
+		<setting label="Go to http://www.tvaddons.co for support." type="lsep" />
+	</category>
+	<category label="General">
+		<setting label="Advanced Trakt.tv Settings" type="lsep"/>
+		<setting label="Leave these alone unless you know what you are doing." type="lsep"/>
+		<setting id="trakt_base_url" type="text" label="Trakt Base URL" default="api.trakt.tv"/>
+		<setting id="trakt_protocol" type="labelenum" label="Protocol" values="http|https" default="https"/>
+		<setting id="trakt_timeout" type="slider" label="Trakt Timeout (seconds)" default="5" range="1,1,30" option="int"/>
+	</category>
+</settings>

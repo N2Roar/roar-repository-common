@@ -5,6 +5,7 @@
 desktop.ini
 thumbs.db
 addons_xml_generator2.py
+*.url
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

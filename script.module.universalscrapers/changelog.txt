@@ -1,3 +1,10 @@
+22/04/18 v1.0.7
+complete check of scrapers,
+remove dead and seperate slow 
+big overhall on testing section and logging
+Big thanks to "Big Daddy"
+
+
 19/04/18 v1.0.6
 
 Fixed:
