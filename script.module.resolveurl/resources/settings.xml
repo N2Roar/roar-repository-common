@@ -623,6 +623,10 @@
 		<setting id="VidBomResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="VidBomResolver_enabled" type="bool" label="Enabled" default="true"/>
 		<setting id="VidBomResolver_login" type="bool" label="login" default="true" visible="false"/>
+		<setting label="vidcloud" type="lsep"/>
+		<setting id="VidCloudResolver_priority" type="number" label="Priority" default="100"/>
+		<setting id="VidCloudResolver_enabled" type="bool" label="Enabled" default="true"/>
+		<setting id="VidCloudResolver_login" type="bool" label="login" default="true" visible="false"/>
 		<setting label="vidcrazy.net" type="lsep"/>
 		<setting id="VidCrazyResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="VidCrazyResolver_enabled" type="bool" label="Enabled" default="true"/>
@@ -631,12 +635,12 @@
 		<setting id="VideaResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="VideaResolver_enabled" type="bool" label="Enabled" default="true"/>
 		<setting id="VideaResolver_login" type="bool" label="login" default="true" visible="false"/>
+	</category>
+	<category label="Resolvers 8">
 		<setting label="videocloud.co" type="lsep"/>
 		<setting id="VideocloudResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="VideocloudResolver_enabled" type="bool" label="Enabled" default="true"/>
 		<setting id="VideocloudResolver_login" type="bool" label="login" default="true" visible="false"/>
-	</category>
-	<category label="Resolvers 8">
 		<setting label="videoget" type="lsep"/>
 		<setting id="VideogetResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="VideogetResolver_enabled" type="bool" label="Enabled" default="true"/>
@@ -709,12 +713,12 @@
 		<setting id="VidToDoResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="VidToDoResolver_enabled" type="bool" label="Enabled" default="true"/>
 		<setting id="VidToDoResolver_login" type="bool" label="login" default="true" visible="false"/>
+	</category>
+	<category label="Resolvers 9">
 		<setting label="vidup.me" type="lsep"/>
 		<setting id="VidUpMeResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="VidUpMeResolver_enabled" type="bool" label="Enabled" default="true"/>
 		<setting id="VidUpMeResolver_login" type="bool" label="login" default="true" visible="false"/>
-	</category>
-	<category label="Resolvers 9">
 		<setting label="vidwatch.me" type="lsep"/>
 		<setting id="VidwatchResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="VidwatchResolver_enabled" type="bool" label="Enabled" default="true"/>
