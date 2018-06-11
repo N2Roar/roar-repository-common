@@ -49,7 +49,7 @@
     </extension>
 </addon>
 
-<addon id="script.module.resolveurl" name="ResolveURL" version="5.0.11" provider-name="jsergio">
+<addon id="script.module.resolveurl" name="ResolveURL" version="5.0.12" provider-name="jsergio">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0" />
 		<import addon="plugin.video.youtube" optional="true" />
@@ -94,7 +94,7 @@
         </extension>
 </addon>
 
-<addon id="script.module.urlresolver" name="URLResolver" version="5.0.16" provider-name="tvaddons">
+<addon id="script.module.urlresolver" name="URLResolver" version="5.0.20" provider-name="tvaddons">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0" />
 		<import addon="plugin.video.youtube" optional="true" />

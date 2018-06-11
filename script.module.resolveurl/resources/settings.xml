@@ -14,11 +14,9 @@
 		<setting label="AllDebrid" type="lsep"/>
 		<setting id="AllDebridResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="AllDebridResolver_enabled" type="bool" label="Enabled" default="true"/>
-		<setting id="AllDebridResolver_login" type="bool" label="login" default="false"/>
-		<setting id="AllDebridResolver_username" enable="eq(-1,true)" type="text" label="Username" default=""/>
-		<setting id="AllDebridResolver_password" enable="eq(-2,true)" type="text" label="Password" option="hidden" default=""/>
-		<setting id="AllDebridResolver_auth" type="action" label="(Re)Authorize My Account" enable="!eq(-1,)+!eq(-2,)+!eq(-3,false)" action="RunPlugin(plugin://script.module.resolveurl/?mode=auth_ad)"/>
-		<setting id="AllDebridResolver_reset" type="action" label="Reset My Authorization" enable="!eq(-2,)+!eq(-3,)+!eq(-4,false)" action="RunPlugin(plugin://script.module.resolveurl/?mode=reset_ad)"/>
+		<setting id="AllDebridResolver_login" type="bool" label="login" default="true" visible="false"/>
+		<setting id="AllDebridResolver_auth" type="action" label="(Re)Authorize My Account" action="RunPlugin(plugin://script.module.resolveurl/?mode=auth_ad)"/>
+		<setting id="AllDebridResolver_reset" type="action" label="Reset My Authorization" action="RunPlugin(plugin://script.module.resolveurl/?mode=reset_ad)"/>
 		<setting id="AllDebridResolver_token" visible="false" type="text" default=""/>
 		<setting label="Debrid-Link.fr" type="lsep"/>
 		<setting id="DebridLinkResolver_priority" type="number" label="Priority" default="100"/>
