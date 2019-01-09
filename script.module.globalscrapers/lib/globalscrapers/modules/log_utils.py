@@ -12,7 +12,7 @@ from datetime import date, datetime, timedelta
 from globalscrapers.modules import control
 
 name        = control.addonInfo('name')
-DEBUGPREFIX = '[COLOR red][ PLACENTA DEBUG ][/COLOR]' # Using color coding, for color formatted log viewers like Assassin's Tools
+DEBUGPREFIX = '[COLOR red][ 13CLOWNS DEBUG ][/COLOR]' # Using color coding, for color formatted log viewers like Assassin's Tools
 LOGPATH     = xbmc.translatePath('special://logpath/')
 
 def log(msg, level=LOGNOTICE):
@@ -30,7 +30,7 @@ def log(msg, level=LOGNOTICE):
             msg = '%s (ENCODED)' % (msg.encode('utf-8'))
 
         if not control.setting('debug.location') == '0':
-            log_file = os.path.join(LOGPATH, 'placenta.log')
+            log_file = os.path.join(LOGPATH, '13clowns.log')
             if not os.path.exists(log_file): f = open(log_file, 'w'); f.close()
             with open(log_file, 'a') as f:
                 line = '[%s %s] %s: %s' % (datetime.now().date(), str(datetime.now().time())[:8], DEBUGPREFIX, msg)
