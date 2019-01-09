@@ -49,6 +49,21 @@
     </extension>
 </addon>
 
+<addon id="script.module.globalscrapers" name="globalscrapers Module" version="4.0.0" provider-name="Solid_Snake">
+	<requires>
+		<import addon="xbmc.python" version="2.1.0" />
+		<import addon="script.module.beautifulsoup4"/>
+	</requires>
+	<extension point="xbmc.python.module" library="lib" />
+	<extension point="xbmc.addon.metadata">
+		<platform>all</platform>
+        <reuselanguageinvoker>false</reuselanguageinvoker>
+		<summary lang="en">globalscrapers Module</summary>
+		<description>globalscrapers Module</description>
+        <license>GPL</license>
+	</extension>
+</addon>
+
 <addon id="script.module.metahandler"
      name="metahandler"
      version="2.9.0.01"
