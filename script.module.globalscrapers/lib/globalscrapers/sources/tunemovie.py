@@ -11,7 +11,7 @@
 #######################################################################
 
 # Addon Name: Jor-El
-# Addon id: plugin.video.jor-el
+# Addon id: plugin.video.resistance
 # Addon Provider: KoDIY
 
 

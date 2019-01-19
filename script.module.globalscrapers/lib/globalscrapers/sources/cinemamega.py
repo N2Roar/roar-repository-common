@@ -9,7 +9,7 @@
 #######################################################################
 
 # Addon Name: Jor-El
-# Addon id: plugin.video.jor-el
+# Addon id: plugin.video.resistance
 # Addon Provider: KoDIY
 
 import re, traceback, urlparse, urllib, base64
