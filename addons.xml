@@ -49,21 +49,6 @@
     </extension>
 </addon>
 
-<addon id="script.module.globalscrapers" name="globalscrapers Module" version="4.1.1.01" provider-name="Solid_Snake">
-	<requires>
-		<import addon="xbmc.python" version="2.1.0" />
-		<import addon="script.module.beautifulsoup4"/>
-	</requires>
-	<extension point="xbmc.python.module" library="lib" />
-	<extension point="xbmc.addon.metadata">
-		<platform>all</platform>
-        <reuselanguageinvoker>false</reuselanguageinvoker>
-		<summary lang="en">globalscrapers Module</summary>
-		<description>globalscrapers Module</description>
-        <license>GPL</license>
-	</extension>
-</addon>
-
 <addon id="script.module.metahandler"
      name="metahandler"
      version="2.9.0.01"
@@ -89,7 +74,7 @@
   </extension>
 </addon>
 
-<addon id="script.module.resolveurl" name="ResolveURL" version="5.0.26" provider-name="jsergio">
+<addon id="script.module.resolveurl" name="ResolveURL" version="5.0.27" provider-name="jsergio">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0" />
 		<import addon="plugin.video.youtube" optional="true" />
@@ -134,7 +119,7 @@
         </extension>
 </addon>
 
-<addon id="script.module.urlresolver" name="URLResolver" version="5.0.31" provider-name="tvaddons">
+<addon id="script.module.urlresolver" name="URLResolver" version="5.0.32" provider-name="tvaddons">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0" />
 		<import addon="plugin.video.youtube" optional="true" />
