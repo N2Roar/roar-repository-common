@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 '''
     urlresolver Kodi plugin
-    Copyright (C) 2019
+    Copyright (C) 2018
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -15,36 +16,33 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-
+ 
 import re
 from lib import helpers
+from lib import jsunpack
 from urlresolver import common
 from urlresolver.resolver import UrlResolver, ResolverError
 
-
-class VeryStreamResolver(UrlResolver):
-    name = "verystream"
-    domains = ["verystream.com", "verystream.xyz", "woof.tube"]
-    pattern = r'(?://|\.)((?:verystream|woof)\.(?:com|xyz|tube))/(?:stream|e|source)/([a-zA-Z0-9]+)'
+class StreamtyResolver(UrlResolver):
+    name = "streamty"
+    domains = ["streamty.com"]
+    pattern = '(?://|\.)(streamty\.com)/(?:embed-)?([0-9a-zA-Z]+)'
 
     def __init__(self):
         self.net = common.Net()
 
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
-        headers = {'User-Agent': common.FF_USER_AGENT, 'Referer': 'https://verystream.com/'}
-        response = self.net.http_GET(web_url, headers=headers)
-        html = response.content
-
-        if html:
-            regex = '(%s~[~.:a-zA-Z0-9]+)' % media_id
-            videolink = re.search(regex, html)
-            if videolink:
-                source = 'https://verystream.com/gettoken/{0}?mime=true'.format(videolink.group(1))
-                headers.update({'Referer': web_url})
-                return source + helpers.append_headers(headers)
-
-        raise ResolverError("Could not locate video")
-
+        headers = {'User-Agent': common.RAND_UA, 'Referer': web_url}
+        html = self.net.http_GET(web_url, headers=headers).content
+        r = re.search("text/javascript'>(eval.*?)\s*</script>", html, re.DOTALL)
+        if r:
+            html = jsunpack.unpack(r.group(1))
+            src = re.search('file:"([^"]+)"',html)
+            if src:
+                return src.group(1) + helpers.append_headers(headers)
+        raise ResolverError('Video cannot be located.')
+ 
     def get_url(self, host, media_id):
-        return self._default_get_url(host, media_id, 'https://verystream.com/e/{media_id}')
+        return self._default_get_url(host, media_id, template='https://{host}/embed-{media_id}.html')
+
