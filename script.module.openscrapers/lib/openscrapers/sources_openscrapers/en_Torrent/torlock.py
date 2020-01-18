@@ -32,17 +32,16 @@ from openscrapers.modules import cleantitle
 from openscrapers.modules import client
 from openscrapers.modules import debrid
 from openscrapers.modules import source_utils
-from openscrapers.modules import cfscrape
+from openscrapers.modules import workers
 
 
 class source:
 	def __init__(self):
-		self.priority = 1
+		self.priority = 0
 		self.language = ['en']
-		self.domains = ['www.doublr.org']
-		self.base_link = 'https://www.doublr.org'
-		self.search_link = '/search?q=%s'
-		self.scraper = cfscrape.create_scraper()
+		self.domain = ['torlock.unblockit.biz']
+		self.base_link = 'https://torlock.unblockit.biz'
+		self.search_link = '/all/torrents/%s.html?'
 
 
 	def movie(self, imdb, title, localtitle, aliases, year):
@@ -77,24 +76,24 @@ class source:
 
 
 	def sources(self, url, hostDict, hostprDict):
+		self.sources = []
 		try:
-			sources = []
-
 			if url is None:
-				return sources
+				return self.sources
 
 			if debrid.status() is False:
-				return sources
+				return self.sources
 
 			data = urlparse.parse_qs(url)
 			data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
-			title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
-			title = title.replace('&', 'and').replace('Special Victims Unit', 'SVU')
+			self.title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
+			self.title = self.title.replace('&', 'and').replace('Special Victims Unit', 'SVU')
 
-			hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else data['year']
+			self.hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else data['year']
+			self.year = data['year']
 
-			query = '%s %s' % (title, hdlr)
+			query = '%s %s' % (self.title, self.hdlr)
 			query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', '', query)
 
 			url = self.search_link % urllib.quote_plus(query)
@@ -102,70 +101,76 @@ class source:
 			# log_utils.log('url = %s' % url, log_utils.LOGDEBUG)
 
 			try:
-				# r = client.request(url)
-				r = self.scraper.get(url).content
-				posts = client.parseDOM(r, 'tr')
+				r = client.request(url)
+				links = re.findall('<a href=(/torrent/.+?)>', r, re.DOTALL)
+				# log_utils.log('links = %s' % str(links), log_utils.LOGDEBUG)
 
-				for post in posts:
-					links = re.findall('<a href="(/torrent/.+?)">(.+?)<', post, re.DOTALL)
-
-					try:
-						size = re.findall('((?:\d+\,\d+\.\d+|\d+\.\d+|\d+\,\d+|\d+)\s*(?:GiB|MiB|GB|MB))', post)[0]
-						div = 1 if size.endswith('GB') else 1024
-						size = float(re.sub('[^0-9|/.|/,]', '', size.replace(',', '.'))) / div
-						size = '%.2f GB' % size
-					except:
-						size = '0'
-
-					for link, ref in links:
-						link = urlparse.urljoin(self.base_link, link)
-						# link = client.request(link)
-						link = self.scraper.get(link).content
-						link = re.findall('a class=".+?" rel=".+?" href="(magnet:.+?)"', link, re.DOTALL)
-
-						for url in link:
-							url = url.split('&tr')[0]
-
-							if any(x in url.lower() for x in ['french', 'italian', 'spanish', 'truefrench', 'dublado', 'dubbed']):
-								continue
-
-							if url in str(sources):
-								continue
-
-							name = url.split('&dn=')[1]
-							name = urllib.unquote_plus(urllib.unquote_plus(name))
-
-							if name.startswith('www.'):
-								try:
-									name = name.split(' - ')[1].lstrip()
-								except:
-									name = re.sub(r'\www..+? ', '', name)
-
-							t = name.split(hdlr)[0].replace(data['year'], '').replace('(', '').replace(')', '').replace('&', 'and')
-							if cleantitle.get(t) != cleantitle.get(title):
-								continue
-
-							if hdlr not in name:
-								continue
-
-							quality, info = source_utils.get_release_quality(name, url)
-
-							info.append(size)
-							info = ' | '.join(info)
-
-							sources.append({'source': 'torrent', 'quality': quality, 'language': 'en', 'url': url,
-														'info': info, 'direct': False, 'debridonly': True})
-
-				return sources
-
+				threads = []
+				for link in links:
+					threads.append(workers.Thread(self.get_sources, link))
+				[i.start() for i in threads]
+				[i.join() for i in threads]
+				return self.sources
 			except:
-				source_utils.scraper_error('DOUBLR')
-				return sources
+				source_utils.scraper_error('ETTV')
+				return self.sources
 
 		except:
-			source_utils.scraper_error('DOUBLR')
-			return sources
+			source_utils.scraper_error('ETTV')
+			return self.sources
 
+
+	def get_sources(self, link):
+		try:
+			url = '%s%s' % (self.base_link, link)
+			result = client.request(url)
+			if 'magnet' not in result:
+				raise Exception()
+
+			url = 'magnet:%s' % (re.findall('a href="magnet:(.+?)"', result, re.DOTALL)[0])
+			url = urllib.unquote(url).decode('utf8').replace('&amp;', '&')
+			url = url.split('&tr=')[0]
+			# log_utils.log('url = %s' % url, log_utils.LOGDEBUG)
+
+			if url in str(self.sources):
+				raise Exception()
+
+			size_list = re.findall('<dt>SIZE</dt><dd>(.+?)<', result, re.DOTALL)
+
+			if any(x in url.lower() for x in ['french', 'italian', 'spanish', 'truefrench', 'dublado', 'dubbed']):
+				raise Exception()
+
+			name = url.split('&dn=')[1]
+			t = name.split(self.hdlr)[0].replace(self.year, '').replace('(', '').replace(')', '').replace('&', 'and').replace('+', ' ')
+
+			if cleantitle.get(t) != cleantitle.get(self.title):
+				raise Exception()
+
+			if self.hdlr not in name:
+				raise Exception()
+
+			quality, info = source_utils.get_release_quality(name, url)
+
+			for match in size_list:
+				try:
+					size = re.findall('((?:\d+\,\d+\.\d+|\d+\.\d+|\d+\,\d+|\d+)\s*(?:GiB|MiB|GB|MB))', match)[0]
+					div = 1 if size.endswith('GB') else 1024
+					size = float(re.sub('[^0-9|/.|/,]', '', size.replace(',', '.'))) / div
+					size = '%.2f GB' % size
+					info.insert(0, size)
+					if size:
+						break
+				except:
+					size = '0'
+					pass
+
+			info = ' | '.join(info)
+
+			self.sources.append({'source': 'torrent', 'quality': quality, 'language': 'en', 'url': url,
+												'info': info, 'direct': False, 'debridonly': True})
+
+		except:
+			pass
 
 	def resolve(self, url):
 		return url
