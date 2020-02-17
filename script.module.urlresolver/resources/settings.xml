@@ -480,16 +480,20 @@
 		<setting id="TheVidResolver_login" type="bool" label="login" default="true" visible="false"/>
 		<setting id="TheVidResolver_auto_update" type="bool" label="Automatically update resolver" default="true"/>
 		<setting id="TheVidResolver_etag" type="text" default="" visible="false"/>
+		<setting label="thevideo.me" type="lsep"/>
+		<setting id="TheVideoMeResolver_priority" type="number" label="Priority" default="100"/>
+		<setting id="TheVideoMeResolver_enabled" type="bool" label="Enabled" default="true"/>
+		<setting id="TheVideoMeResolver_login" type="bool" label="login" default="true" visible="false"/>
 		<setting label="thevideobee.to" type="lsep"/>
 		<setting id="VideoBeeResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="VideoBeeResolver_enabled" type="bool" label="Enabled" default="true"/>
 		<setting id="VideoBeeResolver_login" type="bool" label="login" default="true" visible="false"/>
+	</category>
+	<category label="Resolvers 6">
 		<setting label="tocloud" type="lsep"/>
 		<setting id="ToCloudResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="ToCloudResolver_enabled" type="bool" label="Enabled" default="true"/>
 		<setting id="ToCloudResolver_login" type="bool" label="login" default="true" visible="false"/>
-	</category>
-	<category label="Resolvers 6">
 		<setting label="toltsd-fel" type="lsep"/>
 		<setting id="Toltsd_felResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="Toltsd_felResolver_enabled" type="bool" label="Enabled" default="true"/>
@@ -565,12 +569,12 @@
 		<setting id="VeeHDResolver_login" type="bool" label="login" default="false"/>
 		<setting id="VeeHDResolver_username" enable="eq(-1,true)" type="text" label="Username" default=""/>
 		<setting id="VeeHDResolver_password" enable="eq(-2,true)" type="text" label="Password" option="hidden" default=""/>
+	</category>
+	<category label="Resolvers 7">
 		<setting label="veoh" type="lsep"/>
 		<setting id="VeohResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="VeohResolver_enabled" type="bool" label="Enabled" default="true"/>
 		<setting id="VeohResolver_login" type="bool" label="login" default="true" visible="false"/>
-	</category>
-	<category label="Resolvers 7">
 		<setting label="verystream" type="lsep"/>
 		<setting id="VeryStreamResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="VeryStreamResolver_enabled" type="bool" label="Enabled" default="true"/>
@@ -643,12 +647,12 @@
 		<setting id="VidorgResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="VidorgResolver_enabled" type="bool" label="Enabled" default="true"/>
 		<setting id="VidorgResolver_login" type="bool" label="login" default="true" visible="false"/>
+	</category>
+	<category label="Resolvers 8">
 		<setting label="vidoza" type="lsep"/>
 		<setting id="VidozaResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="VidozaResolver_enabled" type="bool" label="Enabled" default="true"/>
 		<setting id="VidozaResolver_login" type="bool" label="login" default="true" visible="false"/>
-	</category>
-	<category label="Resolvers 8">
 		<setting label="vidstore" type="lsep"/>
 		<setting id="VidstoreResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="VidstoreResolver_enabled" type="bool" label="Enabled" default="true"/>
@@ -721,12 +725,12 @@
 		<setting id="WaawResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="WaawResolver_enabled" type="bool" label="Enabled" default="true"/>
 		<setting id="WaawResolver_login" type="bool" label="login" default="true" visible="false"/>
+	</category>
+	<category label="Resolvers 9">
 		<setting label="watchshare.net" type="lsep"/>
 		<setting id="WatchShareResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="WatchShareResolver_enabled" type="bool" label="Enabled" default="true"/>
 		<setting id="WatchShareResolver_login" type="bool" label="login" default="true" visible="false"/>
-	</category>
-	<category label="Resolvers 9">
 		<setting label="watchvideo" type="lsep"/>
 		<setting id="WatchVideoResolver_priority" type="number" label="Priority" default="100"/>
 		<setting id="WatchVideoResolver_enabled" type="bool" label="Enabled" default="true"/>
