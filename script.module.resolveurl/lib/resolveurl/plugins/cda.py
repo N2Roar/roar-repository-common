@@ -1,5 +1,5 @@
 """
-    plugin for ResolveURL
+    Plugin for ResolveUrl
     Copyright (C) 2020 gujal
 
     This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import re
-import urllib
+from six.moves import urllib_parse
 import json
-from lib import helpers
+from resolveurl.plugins.lib import helpers
 from resolveurl import common
 from resolveurl.resolver import ResolveUrl, ResolverError
 
@@ -27,9 +27,6 @@ class CdaResolver(ResolveUrl):
     name = "cda"
     domains = ['m.cda.pl', 'cda.pl', 'www.cda.pl', 'ebd.cda.pl']
     pattern = r'(?://|\.)(cda\.pl)/(?:.\d+x\d+|video)/([0-9a-zA-Z]+)'
-
-    def __init__(self):
-        self.net = common.Net()
 
     def get_media_url(self, host, media_id):
         web_url = self.get_url(host, media_id)
@@ -50,11 +47,16 @@ class CdaResolver(ResolveUrl):
     def get_url(self, host, media_id):
         return self._default_get_url(host, media_id, template='https://ebd.cda.pl/647x500/{media_id}/vfilm')
 
-    def cda_decode(self, url):
-        url = urllib.unquote(url)
-        strurl = ''
-        for char in url:
-            strurl += chr(33 + (ord(char) + 14) % 94) if 32 < ord(char) < 127 else char
-        strurl = strurl if strurl.startswith('http') else 'https://{0}'.format(strurl)
-        strurl = strurl if strurl.endswith('.mp4') else '{0}.mp4'.format(strurl)
-        return strurl.replace("adc.mp4", ".mp4")
+    def cda_decode(self, a):
+        a = a.replace("_XDDD", "")
+        a = a.replace("_CDA", "")
+        a = a.replace("_ADC", "")
+        a = a.replace("_CXD", "")
+        a = a.replace("_QWE", "")
+        a = a.replace("_Q5", "")
+        a = urllib_parse.unquote(a)
+        a = ''.join([chr(33 + (ord(char) + 14) % 94) if 32 < ord(char) < 127 else char for char in a])
+        a = a.replace(".cda.mp4", "")
+        a = a.replace(".2cda.pl", ".cda.pl")
+        a = a.replace(".3cda.pl", ".cda.pl")
+        return "https://{0}.mp4".format(a)

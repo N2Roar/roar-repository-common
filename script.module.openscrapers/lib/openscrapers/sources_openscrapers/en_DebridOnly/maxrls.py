@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-# modified by Venom for Openscrapers
+# modified by Venom for Openscrapers  (added cfscrape 4-3-2020)
 
 #  ..#######.########.#######.##....#..######..######.########....###...########.#######.########..######.
 #  .##.....#.##.....#.##......###...#.##....#.##....#.##.....#...##.##..##.....#.##......##.....#.##....##
@@ -27,9 +27,13 @@
 
 
 import re
-import urllib
-import urlparse
 
+try: from urlparse import parse_qs, urljoin
+except ImportError: from urllib.parse import parse_qs, urljoin
+try: from urllib import urlencode, quote_plus
+except ImportError: from urllib.parse import urlencode, quote_plus
+
+from openscrapers.modules import cfscrape
 from openscrapers.modules import cleantitle
 from openscrapers.modules import client
 from openscrapers.modules import debrid
@@ -38,7 +42,7 @@ from openscrapers.modules import source_utils
 
 class source:
 	def __init__(self):
-		self.priority = 1
+		self.priority = 28
 		self.language = ['en']
 		self.domains = ['max-rls.com']
 		self.base_link = 'http://max-rls.com'
@@ -48,7 +52,7 @@ class source:
 	def movie(self, imdb, title, localtitle, aliases, year):
 		try:
 			url = {'imdb': imdb, 'title': title, 'year': year}
-			url = urllib.urlencode(url)
+			url = urlencode(url)
 			return url
 		except:
 			return
@@ -57,7 +61,7 @@ class source:
 	def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
 		try:
 			url = {'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'year': year}
-			url = urllib.urlencode(url)
+			url = urlencode(url)
 			return url
 		except:
 			return
@@ -67,18 +71,19 @@ class source:
 		try:
 			if url is None:
 				return
-			url = urlparse.parse_qs(url)
+			url = parse_qs(url)
 			url = dict([(i, url[i][0]) if url[i] else (i, '') for i in url])
 			url['title'], url['premiered'], url['season'], url['episode'] = title, premiered, season, episode
-			url = urllib.urlencode(url)
+			url = urlencode(url)
 			return url
 		except:
 			return
 
 
 	def sources(self, url, hostDict, hostprDict):
+		sources = []
 		try:
-			sources = []
+			self.scraper = cfscrape.create_scraper(delay=5)
 
 			if url is None:
 				return sources
@@ -88,7 +93,7 @@ class source:
 
 			hostDict = hostprDict + hostDict
 
-			data = urlparse.parse_qs(url)
+			data = parse_qs(url)
 			data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
 			title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
@@ -99,21 +104,21 @@ class source:
 			query = '%s %s' % (title, hdlr)
 			query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', '', query)
 
-			url = self.search_link % urllib.quote_plus(query)
-			url = urlparse.urljoin(self.base_link, url).replace('%3A+', '+')
+			url = self.search_link % quote_plus(query)
+			url = urljoin(self.base_link, url).replace('%3A+', '+')
 			# log_utils.log('url = %s' % url, log_utils.LOGDEBUG)
 
-			r = client.request(url)
+			r = self.scraper.get(url).content
 
 			if r is None and 'tvshowtitle' in data:
 				season = re.search('S(.*?)E', hdlr)
 				season = season.group(1)
 				url = title
-				r = client.request(url)
+				r = self.scraper.get(url).content
 
 			for loopCount in range(0, 2):
 				if loopCount == 1 or (r is None and 'tvshowtitle' in data):
-					r = client.request(url)
+					r = self.scraper.get(url).content
 				posts = client.parseDOM(r, "h2", attrs={"class": "postTitle"})
 
 				items = []
@@ -151,7 +156,7 @@ class source:
 			for item in items:
 				try:
 					i = str(item)
-					r = client.request(i)
+					r = self.scraper.get(url).content
 					u = client.parseDOM(r, "div", attrs={"class": "postContent"})
 
 					for t in u:

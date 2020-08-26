@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# created by Venom for Openscrapers
+# created by Venom for Openscrapers (added cfscrape 4-20-2020)(updated 5-16-2020)
 
 #  ..#######.########.#######.##....#..######..######.########....###...########.#######.########..######.
 #  .##.....#.##.....#.##......###...#.##....#.##....#.##.....#...##.##..##.....#.##......##.....#.##....##
@@ -26,10 +26,13 @@
 '''
 
 import re
-import urllib
-import urlparse
 
-from openscrapers.modules import cleantitle
+try: from urlparse import parse_qs, urljoin
+except ImportError: from urllib.parse import parse_qs, urljoin
+try: from urllib import urlencode, quote_plus, unquote_plus
+except ImportError: from urllib.parse import urlencode, quote_plus, unquote_plus
+
+from openscrapers.modules import cfscrape
 from openscrapers.modules import client
 from openscrapers.modules import debrid
 from openscrapers.modules import source_utils
@@ -38,29 +41,31 @@ from openscrapers.modules import workers
 
 class source:
 	def __init__(self):
-		self.priority = 1
+		self.priority = 2
 		self.language = ['en']
-		self.domains = ['extratorrent.cm']
-		self.base_link = 'https://extratorrent.cm'
-		self.search_link = '/search/1/?search=%s&new=1&x=48&y=14'
+		self.domains = ['extratorrent.ag']
+		self.base_link = 'https://extratorrent.ag'
+		self.search_link = '/search/?search=%s&new=1&x=53&y=11'
 		self.min_seeders = 1
 
 
 	def movie(self, imdb, title, localtitle, aliases, year):
 		try:
-			url = {'imdb': imdb, 'title': title, 'year': year}
-			url = urllib.urlencode(url)
+			url = {'imdb': imdb, 'title': title, 'aliases': aliases, 'year': year}
+			url = urlencode(url)
 			return url
 		except:
+			source_utils.scraper_error('EXTRATORRENT')
 			return
 
 
 	def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
 		try:
-			url = {'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'year': year}
-			url = urllib.urlencode(url)
+			url = {'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'aliases': aliases, 'year': year}
+			url = urlencode(url)
 			return url
 		except:
+			source_utils.scraper_error('EXTRATORRENT')
 			return
 
 
@@ -68,48 +73,55 @@ class source:
 		try:
 			if url is None:
 				return
-			url = urlparse.parse_qs(url)
+			url = parse_qs(url)
 			url = dict([(i, url[i][0]) if url[i] else (i, '') for i in url])
 			url['title'], url['premiered'], url['season'], url['episode'] = title, premiered, season, episode
-			url = urllib.urlencode(url)
+			url = urlencode(url)
 			return url
 		except:
+			source_utils.scraper_error('EXTRATORRENT')
 			return
 
 
 	def sources(self, url, hostDict, hostprDict):
 		self.sources = []
 		try:
+			scraper = cfscrape.create_scraper()
+
 			if url is None:
 				return self.sources
 
 			if debrid.status() is False:
 				return self.sources
 
-			data = urlparse.parse_qs(url)
+			data = parse_qs(url)
 			data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
 			self.title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
 			self.title = self.title.replace('&', 'and').replace('Special Victims Unit', 'SVU')
-
+			self.aliases = data['aliases']
+			self.episode_title = data['title'] if 'tvshowtitle' in data else None
 			self.hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else data['year']
 			self.year = data['year']
 
 			query = '%s %s' % (self.title, self.hdlr)
-			query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', '', query)
+			query = re.sub('[^A-Za-z0-9\s\.-]+', '', query)
 
 			urls = []
-			url = self.search_link % urllib.quote_plus(query)
-			url = urlparse.urljoin(self.base_link, url)
+			url = self.search_link % quote_plus(query)
+			url = urljoin(self.base_link, url)
 			urls.append(url)
-			urls.append(url.replace('/1/', '/2/'))
-			urls.append(url.replace('/1/', '/3/'))
+			# urls.append('%s%s' % (url, '&page=2')) # next page seems broken right now
+			# urls.append('%s%s' % (url, '&page=3'))
 			# log_utils.log('urls = %s' % urls, log_utils.LOGDEBUG)
 
 			links = []
 			for x in urls:
-				r = client.request(x)
-				list = client.parseDOM(r, 'tr', attrs={'class': 'tlz'})
+				r = scraper.get(x).content
+				if not r:
+					continue
+				list = client.parseDOM(r, 'tr', attrs={'class': 'tlr'})
+				list += client.parseDOM(r, 'tr', attrs={'class': 'tlz'})
 				for item in list:
 					links.append(item)
 
@@ -127,29 +139,31 @@ class source:
 	def get_sources(self, link):
 		try:
 			url = 'magnet:%s' % (re.findall('a href="magnet:(.+?)"', link, re.DOTALL)[0])
-			url = urllib.unquote_plus(url).split('&tr=')[0].replace(' ', '.')
-			url = url.encode('ascii', errors='ignore').decode('ascii', errors='ignore')
-
+			url = unquote_plus(url).replace('&amp;', '&').replace(' ', '.')
+			url = url.split('&tr')[0]
+			hash = re.compile('btih:(.*?)&').findall(url)[0]
 			name = url.split('&dn=')[1]
-			if source_utils.remove_lang(name):
+			name = source_utils.clean_name(self.title, name)
+			if source_utils.remove_lang(name, self.episode_title):
 				return
 
-			# some shows like "Power" have year and hdlr in name
-			t = name.split(self.hdlr)[0].replace(self.year, '').replace('(', '').replace(')', '').replace('&', 'and').replace('.US.', '.').replace('.us.', '.')
-			if cleantitle.get(t) != cleantitle.get(self.title):
-				return
-
-			if self.hdlr not in name:
+			if not source_utils.check_title(self.title, self.aliases, name, self.hdlr, self.year):
 				return
 
 			if url in str(self.sources):
 				return
+
+			# filter for episode multi packs (ex. S01E01-E17 is also returned in query)
+			if self.episode_title:
+				if not source_utils.filter_single_episodes(self.hdlr, name):
+					return
 
 			try:
 				seeders = int(client.parseDOM(link, 'td', attrs={'class': 'sy'})[0].replace(',', ''))
 				if self.min_seeders > seeders:
 					return
 			except:
+				seeders = 0
 				pass
 
 			quality, info = source_utils.get_release_quality(name, url)
@@ -159,14 +173,14 @@ class source:
 				dsize, isize = source_utils._size(size)
 				info.insert(0, isize)
 			except:
+				source_utils.scraper_error('EXTRATORRENT')
 				dsize = 0
 				pass
 
 			info = ' | '.join(info)
 
-			self.sources.append({'source': 'torrent', 'quality': quality, 'language': 'en', 'url': url,
-											'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
-
+			self.sources.append({'source': 'torrent', 'seeders': seeders, 'hash': hash, 'name': name, 'quality': quality,
+											'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True, 'size': dsize})
 		except:
 			source_utils.scraper_error('EXTRATORRENT')
 			pass
