@@ -1,21 +1,17 @@
-Version 5.1.7 (September 3, 2020)
+Version 5.1.14 (November 17, 2020)
 - Code Base Changes:
-    - Flake8 linting
+    - None
 
 - Resolvers Added:
-    - None
+    - Letsupload
  
 - Resolvers Fixed/Updated:
-    - Anistream
-    - Aparat
-    - Cloud9
-    - Cloudb
     - FEmbed
-    - GoUnlimited
-    - Vidoza
+    - Streamz
+    - Streamtape
 
 - Resolvers Removed
     - None
 
 - Languages Added/Updated
-    - Greek
+    - None

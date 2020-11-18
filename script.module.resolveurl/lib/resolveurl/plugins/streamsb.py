@@ -1,6 +1,6 @@
 """
     Plugin for ResolveUrl
-    Copyright (C) 2020 gujal, Anis3
+    Copyright (C) 2020 groggyegg
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,16 +20,15 @@ from resolveurl.plugins.__resolve_generic__ import ResolveGeneric
 from resolveurl.plugins.lib import helpers
 
 
-class UpStreamResolver(ResolveGeneric):
-    name = "upstream.to"
-    domains = ['upstream.to']
-    pattern = r'(?://|\.)(upstream\.to)/(?:embed-)?([0-9a-zA-Z]+)'
+class StreamSBResolver(ResolveGeneric):
+    name = "streamsb"
+    domains = ['streamsb.net']
+    pattern = r'(?://|\.)(streamsb\.net)/(?:embed-)?([0-9a-zA-Z]+)'
 
     def get_media_url(self, host, media_id):
         return helpers.get_media_url(self.get_url(host, media_id),
-                                     patterns=[r'''sources:\s*\[(?:{file:)?\s*"(?P<url>[^"]+)'''],
-                                     generic_patterns=False,
-                                     referer=False)
+                                     patterns=[r'''sources:\s*\[{file:\s*"(?P<url>[^"]+)'''],
+                                     generic_patterns=False)
 
     def get_url(self, host, media_id):
         return self._default_get_url(host, media_id, template='https://{host}/embed-{media_id}.html')
